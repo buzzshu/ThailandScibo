@@ -6,8 +6,6 @@ from sic_bo_simulator import SicBoSimulator
 import random
 import flask
 from flask import Flask, render_template, request, jsonify
-import threading
-import numpy as np
 import os
 
 app = Flask(__name__, template_folder="templates")
@@ -105,11 +103,14 @@ def simulate_multiple_players(num_players, num_games, bet_amount, initial_capita
         "initial_capital": initial_capital
     }
 
+# 獲取當前腳本所在目錄
+current_dir = os.path.dirname(os.path.abspath(__file__))
 # 創建 templates 資料夾如果不存在
-os.makedirs("templates", exist_ok=True)
+templates_dir = os.path.join(current_dir, "templates")
+os.makedirs(templates_dir, exist_ok=True)
 
 # 創建 HTML 模板
-with open("templates/index.html", "w", encoding="utf-8") as f:
+with open(os.path.join(templates_dir, "index.html"), "w", encoding="utf-8") as f:
     f.write("""
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -550,5 +551,8 @@ if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
     
+    # 決定是否為調試模式
+    debug_mode = os.environ.get('RENDER') != 'true'
+    
     print(f"啟動網頁模擬器，請在瀏覽器中訪問 http://localhost:{port}")
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)
